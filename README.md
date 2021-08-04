@@ -1,17 +1,11 @@
-# Next.js starter
+# Azure IoT Expense Model
 
-[Azure Static Web Apps](https://docs.microsoft.com/azure/static-web-apps/overview) allows you to easily build [Next.js](https://nextjs.org/) apps in minutes. Use this repo with the [Next.js tutorial](https://docs.microsoft.com/azure/static-web-apps/deploy-nextjs) to build and customize a new static site.
+This project couples system architecture with the Azure pricing model to generate models for IoT scenarios.
 
-## Running locally
+## Development
 
-To run locally, open the development server with the following command:
-
-```bash
-npm run dev
-# or
-yarn dev
-```
-
-Next, open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
-
-You can start editing the app by modifying modifying `pages/index.js`. Notice how the the page auto-updates as you edit the file 🎉.
+1. Fork the repo
+2. Create a [GitHub Codespace](https://docs.github.com/en/codespaces/developing-in-codespaces/creating-a-codespace)
+3. [Run](https://code.visualstudio.com/docs/editor/debugging#_run-view) the target "Debug Webapp & API"
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
+5. Code changes to either the webapp or API will hot reload
