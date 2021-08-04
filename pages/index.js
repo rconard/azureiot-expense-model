@@ -71,7 +71,7 @@ class Home extends Component {
   async componentDidMount() {
     const { services } = this.props;
 
-    const dev = window.location.hostname.includes('localhost');
+    const dev = window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1');
     const res = await fetch(dev ? `http://localhost:7071/api/prices?$filter=serviceName eq 'Virtual Machines'` : `/api/retail/prices`);
     const pricing = await res.json();
   

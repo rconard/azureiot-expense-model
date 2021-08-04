@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug API",
+      "type": "node",
+      "request": "attach",
+      "port": 5858,
+      "preLaunchTask": "apiDebug"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Webapp",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run-script",
+        "app:dev"
+      ],
+      "port": 9229,
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Webapp & API",
+      "configurations": ["Debug API", "Debug Webapp"]
+    }
+  ]
+}

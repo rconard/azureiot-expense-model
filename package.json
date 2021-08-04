@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build && next export",
-    "start": "next start"
+    "app:dev": "next dev",
+    "app:build": "next build && next export",
+    "app:start": "next start"
   },
   "dependencies": {
     "isomorphic-unfetch": "^3.1.0",
