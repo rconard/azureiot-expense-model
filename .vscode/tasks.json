@@ -4,12 +4,15 @@
     {
       "label": "apiDebug",
       "type": "func",
-      "command": "host start --javascript --inspect=5858",
+      "command": "host start --javascript",
       "problemMatcher": "$func-node-watch",
       "isBackground": true,
       "dependsOn": "npm install (functions)",
       "options": {
-        "cwd": "${workspaceFolder}/api"
+        "cwd": "${workspaceFolder}/api",
+        "env": {
+          "languageWorkers__node__arguments": "--inspect=5858"
+        }
       }
     },
     {
