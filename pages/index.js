@@ -5,7 +5,7 @@ import fetch from 'isomorphic-unfetch';
 import _ from 'lodash';
 import { ServiceContext } from '../contexts/ServiceContext.js';
 
-import Base from '../services/Base';
+import Base from '../services/Devices';
 
 const timePeriods = [{
   value: 0,

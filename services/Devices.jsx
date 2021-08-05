@@ -2,7 +2,9 @@ import React, { Fragment } from 'react';
 import _ from 'lodash';
 import { ServiceContext } from '../contexts/ServiceContext.js';
 import sharedStyles from '../styles/services/shared.module.css';
-import serviceStyles from '../styles/services/base.module.css';
+import serviceStyles from '../styles/services/devices.module.css';
+
+const SERVICE_ID = 'Devices';
 
 const timePeriods = [{
   value: 0,
@@ -39,7 +41,7 @@ const timePeriods = [{
   prompt: "1/month",
 }];
 
-class Base extends React.Component {
+class Devices extends React.Component {
   constructor(props) {
     super(props);
 
@@ -58,7 +60,7 @@ class Base extends React.Component {
     } = this.state;
 
     const myQuestions = _.pickBy(questions, (question) => {
-      return question.parent === Base;
+      return question.parent === SERVICE_ID;
     });
 
     return !_.isEqual(myQuestions, questionState);
@@ -84,7 +86,7 @@ class Base extends React.Component {
 
     // Update internal state for shouldComponentMount logic
     const myQuestions = _.pickBy(questions, (question) => {
-      return question.parent === Base;
+      return question.parent === SERVICE_ID;
     });
 
     this.setState({
@@ -93,16 +95,18 @@ class Base extends React.Component {
   }
 
   async componentDidMount() {
-    await this.context.registerService({
-      parent: Base,
-      order: 0,
-      name: "Azure IoT",
-      url_pricing: "https://azure.microsoft.com/en-us/pricing/details/iot-hub/",
-    });
+    await this.context.registerService(
+      SERVICE_ID,
+      {
+        order: 0,
+        name: "Devices",
+        url_pricing: "https://azure.microsoft.com/en-us/pricing/details/iot-hub/",
+      }
+    );
 
     await this.context.registerQuestions({
       device_count: {
-        parent: Base,
+        parent: SERVICE_ID,
         serviceQuestionOrder: 0,
         prompt: "How many devices will you connect?",
         promptType: "number",
@@ -110,7 +114,7 @@ class Base extends React.Component {
         value: 1,
       },
       message_count_day_d2c: {
-        parent: Base,
+        parent: SERVICE_ID,
         serviceQuestionOrder: 1,
         prompt: "How many messages will the device send?",
         promptType: "options",
@@ -119,7 +123,7 @@ class Base extends React.Component {
         options: timePeriods,
       },
       message_count_day_c2d: {
-        parent: Base,
+        parent: SERVICE_ID,
         serviceQuestionOrder: 2,
         prompt: "How many messages will you send the device?",
         promptType: "options",
@@ -128,7 +132,7 @@ class Base extends React.Component {
         options: timePeriods,
       },
       message_size_d2c_kb: {
-        parent: Base,
+        parent: SERVICE_ID,
         serviceQuestionOrder: 3,
         prompt: "How large are the messages from the device to cloud? (kilobytes)",
         promptType: "number",
@@ -136,7 +140,7 @@ class Base extends React.Component {
         value: 4,
       },
       message_size_c2d_kb: {
-        parent: Base,
+        parent: SERVICE_ID,
         serviceQuestionOrder: 4,
         prompt: "How large are the messages from the cloud to device? (kilobytes)",
         promptType: "number",
@@ -193,7 +197,7 @@ class Base extends React.Component {
   }
 }
 
-Base.contextType = ServiceContext;
+Devices.contextType = ServiceContext;
 
 export async function getStaticProps(context) {
   return {
@@ -202,4 +206,4 @@ export async function getStaticProps(context) {
   };
 };
 
-export default Base;
+export default Devices;

@@ -18,10 +18,11 @@ export default class ExpenseWebApp extends App {
 
     this.state = {
       services: {
-        registry: [],
+        registry: {},
         questions: {},
         orderedQuestions: [],
         outputs: {},
+        expenses: {},
         pricing: {},
         registerService: this.registerService,
         registerQuestions: this.registerQuestions,
@@ -33,7 +34,7 @@ export default class ExpenseWebApp extends App {
     };
   }
 
-  async registerService(service) {
+  async registerService(serviceId, service) {
     const {
       services,
     } = this.state;
@@ -41,7 +42,9 @@ export default class ExpenseWebApp extends App {
     this.setState({
       services: update(services, {
         registry: {
-          $set: _.sortBy([...services.registry, service], ['order']),
+          [serviceId]: {
+            $set: service,
+          },
         },
       }),
     });
