@@ -1,0 +1,16 @@
+.service-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 18px;
+    padding: 18px;
+    border: 1px solid #cacaca;
+}
+
+.service-name {
+    display: block;
+    margin: 18px;
+    font-size: 18px;
+    font-weight: 700;
+}

@@ -1,0 +1,19 @@
+.header-layout {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #008ad7;
+    margin-bottom: 18px;
+}
+
+.header-name a,
+.header-name a:visited,
+.header-name h1 {
+    margin: 18px 8px 24px;
+    font-size: 36px;
+    font-weight: 300;
+    text-decoration: none;
+    color: white;
+}

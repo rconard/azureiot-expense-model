@@ -4,7 +4,7 @@
     {
       "label": "apiDebug",
       "type": "func",
-      "command": "host start  --javascript --inspect=5858",
+      "command": "host start --javascript --inspect=5858",
       "problemMatcher": "$func-node-watch",
       "isBackground": true,
       "dependsOn": "npm install (functions)",

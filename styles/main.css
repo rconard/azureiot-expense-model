@@ -7,12 +7,6 @@ body {
   font-family: 'PT Sans', sans-serif;
 }
 
-h1 {
-  font-size: 36px;
-  margin-bottom: 45px;
-  margin-top: 100px;
-}
-
 .single-page-container {
   display: block;
   width: 100%;
@@ -33,16 +27,20 @@ h1 {
 
 .arch-diagram-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   margin: 24px auto 24px;
 }
 
-.arch-diagram {
+/* .arch-diagram {
   display: grid;
   grid-template-columns: [things] 280px [iot] 280px [ingest] 280px [storage] 280px [actions] 280px;
   grid-template-rows: [header] 36px [product] 280px;
   margin: 24px auto 24px;
   text-align: center;
+} */
+
+.arch-diagram-container-deprecated {
+  display: none !important;
 }
 
 .arch-diagram table,
@@ -51,4 +49,41 @@ h1 {
   border: 1px solid black;
   border-collapse: collapse;
   padding: 4px;
+  text-align: center;
+}
+
+.question-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  padding-right: 24px;
+}
+
+.question-container > .question {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 12px;
+  width: 360px;
+  max-width: 100vw;
+}
+
+.question-container label {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+}
+
+.question-container input,
+.question-container select {
+  display: block;
+  width: 80%;
+  max-width: 120px;
+  margin: 8px;
 }

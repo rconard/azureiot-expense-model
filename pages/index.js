@@ -3,6 +3,9 @@ import Link from 'next/link';
 import { Component } from 'react';
 import fetch from 'isomorphic-unfetch';
 import _ from 'lodash';
+import { ServiceContext } from '../contexts/ServiceContext.js';
+
+import Base from '../services/Base';
 
 const timePeriods = [{
   value: 0,
@@ -69,17 +72,15 @@ class Home extends Component {
   }
 
   async componentDidMount() {
-    const { services } = this.props;
-
     const dev = window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1');
     const res = await fetch(dev ? `http://localhost:7071/api/prices?$filter=serviceName eq 'Virtual Machines'` : `/api/retail/prices`);
-    const pricing = await res.json();
+    const pricingResponse = await res.json();
+    await this.context.setPricing(pricingResponse.pricing);
   
     this.setState({
-      pricing,
     });
   }
-  
+
   handleInputChange(event) {
     const target = event.target;
     let value = null;
@@ -103,10 +104,12 @@ class Home extends Component {
 
   render() {
     const {
-      services,
-    } = this.props;
-    const {
       pricing,
+      questions,
+      orderedQuestions,
+      updateQuestion,
+    } = this.context;
+    const {
       device_count,
       device_restart_mo,
       message_count_day_d2c,
@@ -159,42 +162,69 @@ class Home extends Component {
     };
 
     console.log(pricing_model);
-    
+
     return (
       <div
         className="iot-pricing-explorer" >
         <Head>
           <title>Home | Azure IoT Price Explorer</title>
         </Head>
-        <aside>
-          <h3>
-            <Link
-              href={`/`} >
-              <a
-                className="masthead" >
-                <div>
-                  Azure IoT Price Explorer
-                </div>
-              </a>
-            </Link>
-          </h3>
-          <ul>
-            {services.iot.map((service) => {
-              return (
-                <li
-                  key={service.name} >
-                  <Link
-                    href={service.url_pricing} >
-                    <a>{service.name}</a>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </aside>
         <main>
           <div
             className="arch-diagram-container" >
+            <div
+              className="question-container" >
+              {orderedQuestions.map((questionField) => {
+                const question = questions[questionField];
+                return (
+                  <div
+                    className="question" >
+                    <label
+                      htmlFor={questionField} >
+                      {question.prompt}
+                    </label>
+                    {question.promptType === 'number' && (
+                      <input
+                        id={questionField}
+                        name={questionField}
+                        type="number"
+                        value={question.value}
+                        step={question.outputType === 'integer' ? 1 : 0.1}
+                        onChange={(event) => {
+                          updateQuestion(questionField, question.outputType, event);
+                        }} />
+                    )}
+                    {question.promptType === 'options' && (
+                      <select
+                        id={questionField}
+                        name={questionField}
+                        value={question.value}
+                        onChange={(event) => {
+                          updateQuestion(questionField, question.outputType, event);
+                        }} >
+                        {question.options.map((option) => {
+                          return (
+                            <option
+                              key={option.prompt}
+                              value={option.value} >
+                              {option.prompt}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <div
+              className="arch-diagram" >
+              <Base />
+            </div>
+          </div>
+          <hr />
+          <div
+            className="arch-diagram-container-deprecated" >
             <div
               className="arch-diagram" >
               <div>
@@ -447,7 +477,7 @@ class Home extends Component {
                 onChange={this.handleInputChange} />
             </div>
           </div>
-          {Object.keys(pricing).length > 0 && (
+          {Object.keys(this.context.pricing).length > 0 && (
             <div
               style={{
                 display: 'block',
@@ -455,7 +485,7 @@ class Home extends Component {
                 marginTop: 360,
                 overflowY: 'scroll',
               }} >
-              {JSON.stringify(pricing, null, 2)}
+              {JSON.stringify(this.context.pricing, null, 2)}
             </div>
           )}
         </main>
@@ -464,12 +494,11 @@ class Home extends Component {
   }
 }
 
-export async function getStaticProps(context) {
-  const services = require('../utils/services.json');
+Home.contextType = ServiceContext;
 
+export async function getStaticProps(context) {
   return {
     props: {
-      services,
     },
   };
 };
