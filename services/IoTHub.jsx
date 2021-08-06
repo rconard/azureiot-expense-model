@@ -4,6 +4,7 @@ import { ServiceContext } from '../contexts/ServiceContext.js';
 import sharedStyles from '../styles/services/shared.module.css';
 import serviceStyles from '../styles/services/iothub.module.css';
 
+// Create a String to Identify the Service
 const SERVICE_ID = 'IoTHub';
 
 // Place service specific constants here
@@ -42,9 +43,10 @@ class IoTHub extends React.Component {
       lastSynced,
     } = this.state;
 
+    // Verify that this service is due for an update
     if (serviceRegistered && (lastSynced < lastUpdated)) {
       // Update internal expense model here
-      const basic_viable = message_count_day_c2d === 0;
+      const basic_viable = questions.message_count_day_c2d.value === 0;
 
       const messages_day_free_tier_eligible = (Math.ceil(questions.message_size_d2c_kb.value / 0.5) * questions.message_count_day_d2c.value + Math.ceil(questions.message_size_c2d_kb.value / 0.5) * questions.message_count_day_c2d.value) * questions.device_count.value;
 
@@ -69,17 +71,31 @@ class IoTHub extends React.Component {
         },
       };
 
+      let expense = hub.price.s3;
+      tiers_hub.forEach((tier) => {
+        if (hub.viable[tier] && (hub.price[tier] < expense)) {
+          expense = hub.price[tier];
+        }
+      });
+
+      // To avoid an infinite update loop, use the same update time
       this.setState({
         lastSynced: thisUpdateTime,
-      }, () => {
+      }, async () => {
+        // Verify that the inputs result in new outputs
         if (!_.isEqual(outputs.hub, hub)) {
-          this.context.updateOutputs(
+          await this.context.updateOutputs(
             thisUpdateTime,
             {
               hub,
               messages_day_free_tier_eligible,
             }
-          );  
+          );
+          await this.context.updateExpense(
+            thisUpdateTime,
+            SERVICE_ID,
+            expense
+          );
         }
       });
     }
@@ -93,7 +109,8 @@ class IoTHub extends React.Component {
       registerExpense,
     } = this.context;
 
-    // Increment `order` by 10 to leave room for future services to be added in between
+    // Initialize the service
+    //// Increment `order` by 10 to leave room for future services to be added in between
     await registerService(
       SERVICE_ID,
       {
@@ -103,9 +120,21 @@ class IoTHub extends React.Component {
       }
     );
 
+    // Submit questions to the questionairre
+    /* 
+    easily_identifiable_variable_name: {
+      parent: this service,
+      serviceQuestionOrder: the questions will be organized together by this value,
+      prompt: question text,
+      promptType: select the input type,
+      outputType: the output will be cast,
+      value: initialize the value,
+    }
+    */
     await registerQuestions({
     });
 
+    // Initialize the centrally updated variables to allow other services to build on your service
     await registerOutputs({
       hub: {
         price: {
@@ -130,6 +159,7 @@ class IoTHub extends React.Component {
       messages_day_free_tier_eligible: 0
     });
 
+    // Initialize a single expense value from the service
     await registerExpense(
       SERVICE_ID,
       0
@@ -143,6 +173,7 @@ class IoTHub extends React.Component {
   render() {
     const {
       outputs,
+      expenses,
     } = this.context;
     const {
       serviceRegistered,

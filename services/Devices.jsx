@@ -4,6 +4,7 @@ import { ServiceContext } from '../contexts/ServiceContext.js';
 import sharedStyles from '../styles/services/shared.module.css';
 import serviceStyles from '../styles/services/devices.module.css';
 
+// Create a String to Identify the Service
 const SERVICE_ID = 'Devices';
 
 // Place service specific constants here
@@ -75,14 +76,16 @@ class Devices extends React.Component {
       lastSynced,
     } = this.state;
 
+    // Verify that this service is due for an update
     if (serviceRegistered && (lastSynced < lastUpdated)) {
       // Update internal expense model here
       const messages_day = (Math.ceil(questions.message_size_d2c_kb.value / 4) * questions.message_count_day_d2c.value + Math.ceil(questions.message_size_c2d_kb.value / 4) * questions.message_count_day_c2d.value) * questions.device_count.value;
 
+      // To avoid an infinite update loop, use the same update time
       this.setState({
         lastSynced: thisUpdateTime,
       }, () => {
-        
+        // Verify that the inputs result in new outputs
         if (!_.isEqual(outputs.messages_day, messages_day)) {
           this.context.updateOutputs(
             thisUpdateTime,
@@ -104,7 +107,8 @@ class Devices extends React.Component {
       registerExpense,
     } = this.context;
 
-    // Increment `order` by 10 to leave room for future services to be added in between
+    // Initialize the service
+    //// Increment `order` by 10 to leave room for future services to be added in between
     await registerService(
       SERVICE_ID,
       {
@@ -114,6 +118,17 @@ class Devices extends React.Component {
       }
     );
 
+    // Submit questions to the questionairre
+    /* 
+    easily_identifiable_variable_name: {
+      parent: this service,
+      serviceQuestionOrder: the questions will be organized together by this value,
+      prompt: question text,
+      promptType: select the input type,
+      outputType: the output will be cast,
+      value: initialize the value,
+    }
+    */
     await registerQuestions({
       device_count: {
         parent: SERVICE_ID,
@@ -159,6 +174,7 @@ class Devices extends React.Component {
       }
     });
 
+    // Initialize the centrally updated variables to allow other services to build on your service
     await registerOutputs({
       messages_day: 0,
       messages_month: 0,

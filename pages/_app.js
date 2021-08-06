@@ -174,7 +174,7 @@ export default class ExpenseWebApp extends App {
     });
   }
 
-  async updateExpense(serviceId, expense) {
+  async updateExpense(updateTime, serviceId, expense) {
     const {
       services,
     } = this.state;
@@ -187,7 +187,7 @@ export default class ExpenseWebApp extends App {
           },
         },
         lastUpdated: {
-          $set: performance.now(),
+          $set: updateTime,
         },
       }),
     });
