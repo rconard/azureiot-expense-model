@@ -44,13 +44,19 @@ export default class ExpenseWebApp extends App {
       services,
     } = this.state;
 
+    
+    const registry = Object.assign(
+      services.registry,
+      {
+        [serviceId]: service,
+      }
+    );
+
     this.setState({
       services: update(services, {
         registry: {
-          [serviceId]: {
-            $set: service,
-          },
-        }
+          $set: registry,
+        },
       }),
     });
   }
@@ -68,7 +74,7 @@ export default class ExpenseWebApp extends App {
 
     const orderedQuestions = _.sortBy(Object.keys(questions), [(questionField) => {
       const question = questions[questionField];
-      const parentOrder = _.findIndex(services.registry, {parent: question.parent});
+      const parentOrder = services.registry[question.parent].order;
       return parentOrder + (question.serviceQuestionOrder / 10000.0);
     }]);
 
