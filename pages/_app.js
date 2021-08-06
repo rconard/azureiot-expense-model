@@ -14,10 +14,13 @@ export default class ExpenseWebApp extends App {
     this.updateQuestion = this.updateQuestion.bind(this);
     this.registerOutputs = this.registerOutputs.bind(this);
     this.updateOutputs = this.updateOutputs.bind(this);
+    this.registerExpense = this.registerExpense.bind(this);
+    this.updateExpense = this.updateExpense.bind(this);
     this.setPricing = this.setPricing.bind(this);
 
     this.state = {
       services: {
+        lastUpdated: 0,
         registry: {},
         questions: {},
         orderedQuestions: [],
@@ -29,6 +32,8 @@ export default class ExpenseWebApp extends App {
         updateQuestion: this.updateQuestion,
         registerOutputs: this.registerOutputs,
         updateOutputs: this.updateOutputs,
+        registerExpense: this.registerExpense,
+        updateExpense: this.updateExpense,
         setPricing: this.setPricing,
       }
     };
@@ -45,7 +50,7 @@ export default class ExpenseWebApp extends App {
           [serviceId]: {
             $set: service,
           },
-        },
+        }
       }),
     });
   }
@@ -64,8 +69,6 @@ export default class ExpenseWebApp extends App {
     const orderedQuestions = _.sortBy(Object.keys(questions), [(questionField) => {
       const question = questions[questionField];
       const parentOrder = _.findIndex(services.registry, {parent: question.parent});
-      console.log(questionField);
-      console.log(parentOrder + (question.serviceQuestionOrder / 10000.0));
       return parentOrder + (question.serviceQuestionOrder / 10000.0);
     }]);
 
@@ -117,6 +120,9 @@ export default class ExpenseWebApp extends App {
             },
           },
         },
+        lastUpdated: {
+          $set: performance.now(),
+        },
       }),
     });
   }
@@ -145,6 +151,44 @@ export default class ExpenseWebApp extends App {
         outputs: {
           $merge: outputs,
         },
+        lastUpdated: {
+          $set: performance.now(),
+        },
+      }),
+    });
+  }
+
+  async registerExpense(serviceId, expenseValueInit) {
+    const {
+      services,
+    } = this.state;
+
+    this.setState({
+      services: update(services, {
+        expenses: {
+          [serviceId]: {
+            $set: expenseValueInit,
+          },
+        },
+      }),
+    });
+  }
+
+  async updateExpense(serviceId, expense) {
+    const {
+      services,
+    } = this.state;
+
+    this.setState({
+      services: update(services, {
+        expenses: {
+          [serviceId]: {
+            $set: expense,
+          },
+        },
+        lastUpdated: {
+          $set: performance.now(),
+        },
       }),
     });
   }
@@ -158,7 +202,10 @@ export default class ExpenseWebApp extends App {
       services: update(services, {
         pricing: {
           $set: pricing,
-        }
+        },
+        lastUpdated: {
+          $set: performance.now(),
+        },
       }),
     });
   }

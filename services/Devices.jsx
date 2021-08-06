@@ -6,6 +6,7 @@ import serviceStyles from '../styles/services/devices.module.css';
 
 const SERVICE_ID = 'Devices';
 
+// Place service specific constants here
 const timePeriods = [{
   value: 0,
   prompt: "None",
@@ -46,35 +47,35 @@ class Devices extends React.Component {
     super(props);
 
     this.state = {
-      questionState: {},
+      lastSynced: 0,
       serviceRegistered: false,
     };
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     const {
-      questions,
+      lastUpdated,
     } = this.context;
     const {
-      questionState,
+      lastSynced,
     } = this.state;
 
-    const myQuestions = _.pickBy(questions, (question) => {
-      return question.parent === SERVICE_ID;
-    });
-
-    return !_.isEqual(myQuestions, questionState);
+    return lastSynced < lastUpdated;
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
+    const thisUpdateTime = performance.now();
     const {
+      lastUpdated,
       questions,
+      outputs,
     } = this.context;
     const {
       serviceRegistered,
+      lastSynced,
     } = this.state;
 
-    if (serviceRegistered) {
+    if (serviceRegistered && lastSynced < lastUpdated) {
       // Update internal expense model here
       const messages_day = (Math.ceil(questions.message_size_d2c_kb.value / 4) * questions.message_count_day_d2c.value + Math.ceil(questions.message_size_c2d_kb.value / 4) * questions.message_count_day_c2d.value) * questions.device_count.value;
 
@@ -82,20 +83,23 @@ class Devices extends React.Component {
         messages_day,
         messages_month: messages_day * 30,
       });
+
+      this.setState({
+        lastSynced: thisUpdateTime,
+      });
     }
-
-    // Update internal state for shouldComponentMount logic
-    const myQuestions = _.pickBy(questions, (question) => {
-      return question.parent === SERVICE_ID;
-    });
-
-    this.setState({
-      questionState: myQuestions,
-    });
   }
 
   async componentDidMount() {
-    await this.context.registerService(
+    const {
+      registerService,
+      registerQuestions,
+      registerOutputs,
+      registerExpense,
+    } = this.context;
+
+    // Increment `order` by 10 to leave room for future services to be added in between
+    await registerService(
       SERVICE_ID,
       {
         order: 0,
@@ -104,7 +108,7 @@ class Devices extends React.Component {
       }
     );
 
-    await this.context.registerQuestions({
+    await registerQuestions({
       device_count: {
         parent: SERVICE_ID,
         serviceQuestionOrder: 0,
@@ -149,10 +153,16 @@ class Devices extends React.Component {
       }
     });
 
-    this.context.registerOutputs({
+    await registerOutputs({
       messages_day: 0,
       messages_month: 0,
     });
+
+    // This service does not incur expenses
+    // await registerExpense(
+    //   SERVICE_ID,
+    //   0
+    // );
 
     this.setState({
       serviceRegistered: true,
