@@ -75,17 +75,23 @@ class Devices extends React.Component {
       lastSynced,
     } = this.state;
 
-    if (serviceRegistered && lastSynced < lastUpdated) {
+    if (serviceRegistered && (lastSynced < lastUpdated)) {
       // Update internal expense model here
       const messages_day = (Math.ceil(questions.message_size_d2c_kb.value / 4) * questions.message_count_day_d2c.value + Math.ceil(questions.message_size_c2d_kb.value / 4) * questions.message_count_day_c2d.value) * questions.device_count.value;
 
-      this.context.updateOutputs({
-        messages_day,
-        messages_month: messages_day * 30,
-      });
-
       this.setState({
         lastSynced: thisUpdateTime,
+      }, () => {
+        
+        if (!_.isEqual(outputs.messages_day, messages_day)) {
+          this.context.updateOutputs(
+            thisUpdateTime,
+            {
+              messages_day,
+              messages_month: messages_day * 30,
+            }
+          );
+        }
       });
     }
   }

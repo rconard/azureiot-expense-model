@@ -5,7 +5,8 @@ import fetch from 'isomorphic-unfetch';
 import _ from 'lodash';
 import { ServiceContext } from '../contexts/ServiceContext.js';
 
-import Base from '../services/Devices';
+import Devices from '../services/Devices';
+import IoTHub from '../services/IoTHub.jsx';
 
 const timePeriods = [{
   value: 0,
@@ -161,7 +162,7 @@ class Home extends Component {
       },
     };
 
-    console.log(pricing_model);
+    console.log(this.context);
 
     return (
       <div
@@ -178,6 +179,7 @@ class Home extends Component {
                 const question = questions[questionField];
                 return (
                   <div
+                    key={questionField}
                     className="question" >
                     <label
                       htmlFor={questionField} >
@@ -219,7 +221,8 @@ class Home extends Component {
             </div>
             <div
               className="arch-diagram" >
-              <Base />
+              <Devices />
+              <IoTHub />
             </div>
           </div>
           <hr />

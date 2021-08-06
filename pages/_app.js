@@ -20,7 +20,7 @@ export default class ExpenseWebApp extends App {
 
     this.state = {
       services: {
-        lastUpdated: 0,
+        lastUpdated: 1,
         registry: {},
         questions: {},
         orderedQuestions: [],
@@ -141,7 +141,7 @@ export default class ExpenseWebApp extends App {
     });
   }
 
-  async updateOutputs(outputs) {
+  async updateOutputs(updateTime, outputs) {
     const {
       services,
     } = this.state;
@@ -152,7 +152,7 @@ export default class ExpenseWebApp extends App {
           $merge: outputs,
         },
         lastUpdated: {
-          $set: performance.now(),
+          $set: updateTime,
         },
       }),
     });
