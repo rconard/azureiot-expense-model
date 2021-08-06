@@ -2,15 +2,14 @@ import React, { Fragment } from 'react';
 import _ from 'lodash';
 import { ServiceContext } from '../contexts/ServiceContext.js';
 import sharedStyles from '../styles/services/shared.module.css';
-import serviceStyles from '../styles/services/iothub.module.css';
+import serviceStyles from '../styles/services/deviceprovisioningservice.module.css';
 
 // Create a String to Identify the Service
-const SERVICE_ID = 'IoTHub';
+const SERVICE_ID = 'DeviceProvisioningService';
 
 // Place service specific constants here
-const tiers_hub = ['free', 'b1', 'b2', 'b3', 's1', 's2', 's3'];
 
-class IoTHub extends React.Component {
+class DeviceProvisioningService extends React.Component {
   constructor(props) {
     super(props);
 
@@ -46,55 +45,25 @@ class IoTHub extends React.Component {
     // Verify that this service is due for an update
     if (serviceRegistered && (lastSynced < lastUpdated)) {
       // Update internal expense model here
-      const basic_viable = questions.message_count_day_c2d.value === 0;
-
-      const messages_day_free_tier_eligible = (Math.ceil(questions.message_size_d2c_kb.value / 0.5) * questions.message_count_day_d2c.value + Math.ceil(questions.message_size_c2d_kb.value / 0.5) * questions.message_count_day_c2d.value) * questions.device_count.value;
-
-      const hub = {
-        price: {
-          free: 0,
-          b1: 10 * (Math.floor(outputs.messages_day / 400000.0) + 1),
-          b2: 50 * (Math.floor(outputs.messages_day / 6000000.0) + 1),
-          b3: 500 * (Math.floor(outputs.messages_day / 300000000.0) + 1),
-          s1: 25 * (Math.floor(outputs.messages_day / 400000.0) + 1),
-          s2: 250 * (Math.floor(outputs.messages_day / 6000000.0) + 1),
-          s3: 2500 * (Math.floor(outputs.messages_day / 300000000.0) + 1),
-        },
-        viable: {
-          free: messages_day_free_tier_eligible < 8000,
-          b1: basic_viable,
-          b2: basic_viable,
-          b3: basic_viable,
-          s1: true,
-          s2: true,
-          s3: true,
-        },
-      };
-
-      let expense = hub.price.s3;
-      tiers_hub.forEach((tier) => {
-        if (hub.viable[tier] && (hub.price[tier] < expense)) {
-          expense = hub.price[tier];
-        }
-      });
+      const dps_hits_month = questions.device_count.value * questions.device_restart_mo.value;
+      const dps_expense = Math.ceil(dps_hits_month / 1000.0) * 0.123;
 
       // To avoid an infinite update loop, use the same update time
       this.setState({
         lastSynced: thisUpdateTime,
       }, async () => {
         // Verify that the inputs result in new outputs
-        if (!_.isEqual(outputs.hub, hub)) {
+        if (!_.isEqual(outputs.dps_hits_month, dps_hits_month)) {
           await this.context.updateOutputs(
             thisUpdateTime,
             {
-              hub,
-              messages_day_free_tier_eligible,
+              dps_hits_month,
             }
           );
           await this.context.updateExpense(
             thisUpdateTime,
             SERVICE_ID,
-            expense
+            dps_expense
           );
         }
       });
@@ -114,8 +83,8 @@ class IoTHub extends React.Component {
     await registerService(
       SERVICE_ID,
       {
-        order: 10,
-        name: "Azure IoT Hub",
+        order: 12,
+        name: "IoT Hub Device Provisioning Service",
         url_pricing: "https://azure.microsoft.com/en-us/pricing/details/iot-hub/",
       }
     );
@@ -132,31 +101,19 @@ class IoTHub extends React.Component {
     }
     */
     await registerQuestions({
+      device_restart_mo: {
+        parent: SERVICE_ID,
+        serviceQuestionOrder: 0,
+        prompt: "How many times does each device restart per month?",
+        promptType: "number",
+        outputType: "integer",
+        value: 2,
+      },
     });
 
     // Initialize the centrally updated variables to allow other services to build on your service
     await registerOutputs({
-      hub: {
-        price: {
-          free: 0,
-          b1: 10,
-          b2: 50,
-          b3: 500,
-          s1: 25,
-          s2: 250,
-          s3: 2500,
-        },
-        viable: {
-          free: true,
-          b1: true,
-          b2: true,
-          b3: true,
-          s1: true,
-          s2: true,
-          s3: true,
-        },
-      },
-      messages_day_free_tier_eligible: 0
+      dps_hits_month: 0,
     });
 
     // Initialize a single expense value from the service
@@ -189,35 +146,27 @@ class IoTHub extends React.Component {
           className={sharedStyles['service-container']} >
           <h3
             className={sharedStyles['service-name']} >
-            IoT Hub
+            IoT Hub Device Provisioning Service
           </h3>
           <table>
             <thead>
               <tr>
-                {tiers_hub.map((tier) => {
-                  return (
-                    <th
-                      key={tier} >
-                      {tier}
-                    </th>
-                  );
-                })}
+                <th>
+                  DPS Requests/Month
+                </th>
+                <th>
+                  Expense
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                {tiers_hub.map((tier) => {
-                  if (!outputs.hub.viable[tier]) {
-                    return <td key={tier} />;
-                  }
-
-                  return (
-                    <td
-                      key={tier} >
-                      ${outputs.hub.price[tier]}
-                    </td>
-                  )
-                })}
+                <td>
+                  {(questions.device_count.value * questions.device_restart_mo.value).toLocaleString()}
+                </td>
+                <td>
+                  {expenses[SERVICE_ID].toLocaleString('en-US', {style: 'currency', currency: 'USD'})}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -226,7 +175,7 @@ class IoTHub extends React.Component {
   }
 }
 
-IoTHub.contextType = ServiceContext;
+DeviceProvisioningService.contextType = ServiceContext;
 
 export async function getStaticProps(context) {
   return {
@@ -235,4 +184,4 @@ export async function getStaticProps(context) {
   };
 };
 
-export default IoTHub;
+export default DeviceProvisioningService;

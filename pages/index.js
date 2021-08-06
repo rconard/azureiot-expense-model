@@ -7,6 +7,7 @@ import { ServiceContext } from '../contexts/ServiceContext.js';
 
 import Devices from '../services/Devices';
 import IoTHub from '../services/IoTHub.jsx';
+import DeviceProvisioningService from '../services/DeviceProvisioningService.jsx';
 
 const timePeriods = [{
   value: 0,
@@ -223,6 +224,7 @@ class Home extends Component {
               className="arch-diagram" >
               <Devices />
               <IoTHub />
+              <DeviceProvisioningService />
             </div>
           </div>
           <hr />

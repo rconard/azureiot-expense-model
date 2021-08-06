@@ -193,7 +193,9 @@ class Devices extends React.Component {
 
   render() {
     const {
+      questions,
       outputs,
+      expenses,
     } = this.context;
     const {
       serviceRegistered,
