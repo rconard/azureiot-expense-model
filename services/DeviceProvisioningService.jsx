@@ -16,6 +16,7 @@ class DeviceProvisioningService extends React.Component {
     this.state = {
       lastSynced: 0,
       serviceRegistered: false,
+      currentPricingRegion: undefined,
     };
   }
 
@@ -34,26 +35,34 @@ class DeviceProvisioningService extends React.Component {
     const thisUpdateTime = performance.now();
     const {
       lastUpdated,
+      armRegionName,
       questions,
       outputs,
+      pricing,
     } = this.context;
     const {
       serviceRegistered,
       lastSynced,
+      currentPricingRegion,
     } = this.state;
 
+    // Select a productId_skuName that will verify pricing is loaded for the selected region
+    const testProduct = 'DZH318Z0BQG1_S1';
+
     // Verify that this service is due for an update
-    if (serviceRegistered && (lastSynced < lastUpdated)) {
+    if (serviceRegistered && (lastSynced < lastUpdated) && (testProduct in pricing)) {
       // Update internal expense model here
       const dps_hits_month = questions.device_count.value * questions.device_restart_mo.value;
-      const dps_expense = Math.ceil(dps_hits_month / 1000.0) * 0.123;
+      const dps_expense = Math.ceil(dps_hits_month / 1000.0) * pricing['DZH318Z0BQG1_S1'].unitPrice;
+      debugger
 
       // To avoid an infinite update loop, use the same update time
       this.setState({
         lastSynced: thisUpdateTime,
+        currentPricingRegion: armRegionName,
       }, async () => {
         // Verify that the inputs result in new outputs
-        if (!_.isEqual(outputs.dps_hits_month, dps_hits_month)) {
+        if (!_.isEqual(outputs.dps_hits_month, dps_hits_month) || !_.isEqual(armRegionName, currentPricingRegion)) {
           await this.context.updateOutputs(
             thisUpdateTime,
             {
@@ -79,12 +88,22 @@ class DeviceProvisioningService extends React.Component {
     } = this.context;
 
     // Initialize the service
-    //// Increment `order` by 10 to leave room for future services to be added in between
+    /*
+    {
+      order: The user prompts will appear in the order specified by this value
+             Increment `order` by 10 to leave room for future services to be added in between
+      name: Display name of the service for end users
+      serviceFamily: Provide the ARM serviceFamily used in the pricing API call
+                     https://docs.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices
+      url_pricing: Webpage where the user can find details on the service pricing
+    }
+    */
     await registerService(
       SERVICE_ID,
       {
         order: 12,
         name: "IoT Hub Device Provisioning Service",
+        serviceFamily: "Internet of Things",
         url_pricing: "https://azure.microsoft.com/en-us/pricing/details/iot-hub/",
       }
     );

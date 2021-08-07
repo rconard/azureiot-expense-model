@@ -1,3 +1,7 @@
+///////////////////////////////////////////
+// Do Not Use This Service as a Template //
+///////////////////////////////////////////
+
 import React, { Fragment } from 'react';
 import _ from 'lodash';
 import { ServiceContext } from '../contexts/ServiceContext.js';
@@ -50,6 +54,7 @@ class Devices extends React.Component {
     this.state = {
       lastSynced: 0,
       serviceRegistered: false,
+      currentPricingRegion: undefined,
     };
   }
 
@@ -68,12 +73,14 @@ class Devices extends React.Component {
     const thisUpdateTime = performance.now();
     const {
       lastUpdated,
+      armRegionName,
       questions,
       outputs,
     } = this.context;
     const {
       serviceRegistered,
       lastSynced,
+      currentPricingRegion,
     } = this.state;
 
     // Verify that this service is due for an update
@@ -84,9 +91,10 @@ class Devices extends React.Component {
       // To avoid an infinite update loop, use the same update time
       this.setState({
         lastSynced: thisUpdateTime,
+        currentPricingRegion: armRegionName,
       }, () => {
         // Verify that the inputs result in new outputs
-        if (!_.isEqual(outputs.messages_day, messages_day)) {
+        if (!_.isEqual(outputs.messages_day, messages_day) || !_.isEqual(armRegionName, currentPricingRegion)) {
           this.context.updateOutputs(
             thisUpdateTime,
             {
@@ -108,12 +116,22 @@ class Devices extends React.Component {
     } = this.context;
 
     // Initialize the service
-    //// Increment `order` by 10 to leave room for future services to be added in between
+    /*
+    {
+      order: The user prompts will appear in the order specified by this value
+             Increment `order` by 10 to leave room for future services to be added in between
+      name: Display name of the service for end users
+      serviceFamily: Provide the ARM serviceFamily used in the pricing API call
+                     https://docs.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices
+      url_pricing: Webpage where the user can find details on the service pricing
+    }
+    */
     await registerService(
       SERVICE_ID,
       {
         order: 0,
         name: "Devices",
+        serviceFamily: "Internet of Things",
         url_pricing: "https://azure.microsoft.com/en-us/pricing/details/iot-hub/",
       }
     );

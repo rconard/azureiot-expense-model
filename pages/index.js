@@ -8,6 +8,7 @@ import { ServiceContext } from '../contexts/ServiceContext.js';
 import Devices from '../services/Devices';
 import IoTHub from '../services/IoTHub.jsx';
 import DeviceProvisioningService from '../services/DeviceProvisioningService.jsx';
+import Region from '../components/Region.jsx';
 
 const timePeriods = [{
   value: 0,
@@ -74,11 +75,6 @@ class Home extends Component {
   }
 
   async componentDidMount() {
-    const dev = window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1');
-    const res = await fetch(dev ? `http://localhost:7071/api/prices?$filter=serviceName eq 'Virtual Machines'` : `/api/retail/prices`);
-    const pricingResponse = await res.json();
-    await this.context.setPricing(pricingResponse.pricing);
-  
     this.setState({
     });
   }
@@ -176,6 +172,7 @@ class Home extends Component {
             className="arch-diagram-container" >
             <div
               className="question-container" >
+              <Region />
               {orderedQuestions.map((questionField) => {
                 const question = questions[questionField];
                 return (

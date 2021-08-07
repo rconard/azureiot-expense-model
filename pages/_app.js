@@ -16,11 +16,14 @@ export default class ExpenseWebApp extends App {
     this.updateOutputs = this.updateOutputs.bind(this);
     this.registerExpense = this.registerExpense.bind(this);
     this.updateExpense = this.updateExpense.bind(this);
-    this.setPricing = this.setPricing.bind(this);
+    this.pullPricing = this.pullPricing.bind(this);
+    this.updateRegion = this.updateRegion.bind(this);
 
     this.state = {
       services: {
         lastUpdated: 1,
+        dev: false,
+        armRegionName: 'westus',
         registry: {},
         questions: {},
         orderedQuestions: [],
@@ -34,7 +37,8 @@ export default class ExpenseWebApp extends App {
         updateOutputs: this.updateOutputs,
         registerExpense: this.registerExpense,
         updateExpense: this.updateExpense,
-        setPricing: this.setPricing,
+        pullPricing: this.pullPricing,
+        updateRegion: this.updateRegion,
       }
     };
   }
@@ -44,7 +48,6 @@ export default class ExpenseWebApp extends App {
       services,
     } = this.state;
 
-    
     const registry = Object.assign(
       services.registry,
       {
@@ -199,21 +202,50 @@ export default class ExpenseWebApp extends App {
     });
   }
 
-  async setPricing(pricing) {
+  async pullPricing(armRegionName, serviceFamily) {
     const {
       services,
     } = this.state;
+
+    const dev = window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1');
+    const query = `/api/collateprices?$filter=armRegionName eq '${armRegionName}' and serviceFamily eq '${serviceFamily}'`;
+    
+    const requestPricing = await fetch(dev ? `http://localhost:7071${query}` : query);
+    const responsePricing = await requestPricing.json();
+    const pricingService = _.keyBy(responsePricing.pricing, i => i.productId + '_' + i.skuName);
+
+    const pricing = Object.assign(
+      services.pricing,
+      pricingService
+    );
 
     this.setState({
       services: update(services, {
         pricing: {
           $set: pricing,
         },
+        armRegionName: {
+          $set: armRegionName,
+        },
         lastUpdated: {
           $set: performance.now(),
         },
       }),
     });
+  }
+
+  async updateRegion(armRegionName) {
+    const {
+      services,
+    } = this.state;
+
+    const serviceFamilies = _.uniq(Object.keys(services.registry).map((serviceId) => {
+      return services.registry[serviceId].serviceFamily;
+    }));
+
+    Promise.all(serviceFamilies.map((serviceFamily) => {
+      return this.pullPricing(armRegionName, serviceFamily);
+    }));
   }
 
   render () {
