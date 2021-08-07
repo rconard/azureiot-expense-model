@@ -54,7 +54,6 @@ class DeviceProvisioningService extends React.Component {
       // Update internal expense model here
       const dps_hits_month = questions.device_count.value * questions.device_restart_mo.value;
       const dps_expense = Math.ceil(dps_hits_month / 1000.0) * pricing['DZH318Z0BQG1_S1'].unitPrice;
-      debugger
 
       // To avoid an infinite update loop, use the same update time
       this.setState({
