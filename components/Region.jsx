@@ -28,7 +28,7 @@ class Region extends React.Component {
     } = this.context;
 
     const dev = window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1');
-    const requestIoTHubRegions = await fetch(dev ? `http://localhost:7071/api/prices?$filter=serviceName eq 'IoT Hub' and skuName eq 'S1'` : `/api/retail/prices`);
+    const requestIoTHubRegions = await fetch(dev ? `http://localhost:7071/api/prices?$filter=serviceName eq 'IoT Hub' and skuName eq 'S1'` : `/api/prices`);
     const responseIoTHubRegions = await requestIoTHubRegions.json();
 
     const iotRegions = _.chain(responseIoTHubRegions.pricing.Items)
