@@ -19,7 +19,7 @@ class Header extends React.Component {
         <div
           className={styles["header-name"]} >
           <h1>
-            IoT Expense Estimator
+            Azure IoT Expense Estimator
           </h1>
         </div>
       </header>
