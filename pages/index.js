@@ -9,6 +9,7 @@ import Devices from '../services/Devices';
 import IoTHub from '../services/IoTHub.jsx';
 import DeviceProvisioningService from '../services/DeviceProvisioningService.jsx';
 import Region from '../components/Region.jsx';
+import IoTCentral from '../services/IoTCentral.jsx';
 
 const timePeriods = [{
   value: 0,
@@ -225,6 +226,7 @@ class Home extends Component {
               <Devices />
               <IoTHub />
               <DeviceProvisioningService />
+              <IoTCentral />
             </div>
             <div
               className="expense-table" >

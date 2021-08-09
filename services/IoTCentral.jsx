@@ -2,21 +2,28 @@ import React, { Fragment } from 'react';
 import _ from 'lodash';
 import { ServiceContext } from '../contexts/ServiceContext.js';
 import sharedStyles from '../styles/services/shared.module.css';
-import serviceStyles from '../styles/services/deviceprovisioningservice.module.css';
+import serviceStyles from '../styles/services/iotcentral.module.css';
 
 // Create a String to Identify the Service
-const SERVICE_ID = 'DeviceProvisioningService';
+const SERVICE_ID = 'IoTCentral';
 
 // Place service specific constants here
+const central_settings = {
+  messages_included: {
+    s0: 400,
+    s1: 5000,
+    s2: 30000,
+  },
+};
+const tiers_central = ['s0', 's1', 's2'];
 
-class DeviceProvisioningService extends React.Component {
+class IoTCentral extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       lastSynced: undefined,
       serviceRegistered: false,
-      currentPricingRegion: undefined,
     };
   }
 
@@ -52,13 +59,25 @@ class DeviceProvisioningService extends React.Component {
     const initState = hashState(armRegionName, questions, outputs, expenses);
 
     // Select a productId_skuName_meterName that will verify pricing is loaded for the selected region
-    const testProduct = 'DZH318Z0BQG1_S1_S1 Operations';
+    const testProduct = 'DZH318Z0BQD6_Standard_Standard Tier 2';
 
     // Verify that this service is due for an update
     if (serviceRegistered && !_.isEqual(lastSynced, lastUpdated) && (testProduct in pricing)) {
       // Update internal expense model here
-      const dps_hits_month = questions.device_count.value * questions.device_restart_mo.value;
-      const dps_expense = Math.ceil(dps_hits_month / 1000.0) * pricing['DZH318Z0BQG1_S1_S1 Operations'].unitPrice;
+      const devices_central_count = Math.max(questions.device_count.value - 2, 0);
+
+      const central = {
+        s0: devices_central_count * pricing['DZH318Z0BQD6_Standard_Standard Tier 0'].unitPrice * 732 + Math.max(outputs.messages_month - devices_central_count * central_settings.messages_included.s0 - 2 * central_settings.messages_included.s0, 0) / 1000.0 * pricing['DZH318Z0BQD6_Standard_Overage Messages ST0'].unitPrice,
+        s1: devices_central_count * pricing['DZH318Z0BQD6_Standard_Standard Tier 1'].unitPrice * 732 + Math.max(outputs.messages_month - devices_central_count * central_settings.messages_included.s1 - 2 * central_settings.messages_included.s1, 0) / 1000.0 * pricing['DZH318Z0BQD6_Standard_Overage Messages'].unitPrice,
+        s2: devices_central_count * pricing['DZH318Z0BQD6_Standard_Standard Tier 2'].unitPrice * 732 + Math.max(outputs.messages_month - devices_central_count * central_settings.messages_included.s2 - 2 * central_settings.messages_included.s2, 0) / 1000.0 * pricing['DZH318Z0BQD6_Standard_Overage Messages'].unitPrice,
+      };
+
+      let expense = central.s2;
+      tiers_central.forEach((tier) => {
+        if (central[tier] < expense) {
+          expense = central[tier];
+        }
+      });
 
       // To avoid an infinite update loop, use the same update time
       this.setState({
@@ -66,17 +85,18 @@ class DeviceProvisioningService extends React.Component {
         currentPricingRegion: armRegionName,
       }, async () => {
         // Verify that the inputs result in new outputs
-        if (!_.isEqual(outputs.dps_hits_month, dps_hits_month) || !_.isEqual(armRegionName, currentPricingRegion) || !_.isEqual(lastSynced, lastUpdated)) {
+        if (!_.isEqual(outputs.central, central) || !_.isEqual(armRegionName, currentPricingRegion) || !_.isEqual(lastSynced, lastUpdated)) {
           await updateOutputs(
             initState,
             {
-              dps_hits_month,
+              devices_central_count,
+              central,
             }
           );
           await updateExpense(
             initState,
             SERVICE_ID,
-            dps_expense
+            expense
           );
         }
       });
@@ -106,10 +126,10 @@ class DeviceProvisioningService extends React.Component {
     await registerService(
       SERVICE_ID,
       {
-        order: 12,
-        name: "IoT Hub Device Provisioning Service",
+        order: 20,
+        name: "IoT Central",
         serviceFamily: "Internet of Things",
-        url_pricing: "https://azure.microsoft.com/en-us/pricing/details/iot-hub/",
+        url_pricing: "https://azure.microsoft.com/en-us/pricing/details/iot-central/",
       }
     );
 
@@ -125,19 +145,15 @@ class DeviceProvisioningService extends React.Component {
     }
     */
     await registerQuestions({
-      device_restart_mo: {
-        parent: SERVICE_ID,
-        serviceQuestionOrder: 0,
-        prompt: "How many times does each device restart per month?",
-        promptType: "number",
-        outputType: "integer",
-        value: 2,
-      },
     });
 
     // Initialize the centrally updated variables to allow other services to build on your service
     await registerOutputs({
-      dps_hits_month: 0,
+      central: {
+        s0: 0,
+        s1: 0,
+        s2: 0,
+      },
     });
 
     // Initialize a single expense value from the service
@@ -172,27 +188,31 @@ class DeviceProvisioningService extends React.Component {
           className={sharedStyles['service-container']} >
           <h3
             className={sharedStyles['service-name']} >
-            IoT Hub Device Provisioning Service
+            IoT Central
           </h3>
           <table>
             <thead>
               <tr>
-                <th>
-                  DPS Requests/Month
-                </th>
-                <th>
-                  Expense
-                </th>
+                {tiers_central.map((tier) => {
+                  return (
+                    <th
+                      key={tier} >
+                      {tier}
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>
-                  {(questions.device_count.value * questions.device_restart_mo.value).toLocaleString()}
-                </td>
-                <td>
-                  {expenses[SERVICE_ID].toLocaleString('en-US', {style: 'currency', currency: 'USD'})}
-                </td>
+                {tiers_central.map((tier) => {
+                  return (
+                    <td
+                      key={tier} >
+                      {outputs.central[tier].toLocaleString('en-US', {style: 'currency', currency: 'USD'})}
+                    </td>
+                  )
+                })}
               </tr>
             </tbody>
           </table>
@@ -201,7 +221,7 @@ class DeviceProvisioningService extends React.Component {
   }
 }
 
-DeviceProvisioningService.contextType = ServiceContext;
+IoTCentral.contextType = ServiceContext;
 
 export async function getStaticProps(context) {
   return {
@@ -210,4 +230,4 @@ export async function getStaticProps(context) {
   };
 };
 
-export default DeviceProvisioningService;
+export default IoTCentral;

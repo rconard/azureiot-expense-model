@@ -100,7 +100,7 @@ class Devices extends React.Component {
       }, async () => {
         // Verify that the inputs result in new outputs
         if (!_.isEqual(outputs.messages_day, messages_day) || !_.isEqual(armRegionName, currentPricingRegion) || !_.isEqual(lastSynced, lastUpdated)) {
-          updateOutputs(
+          await updateOutputs(
             initState,
             {
               messages_day,

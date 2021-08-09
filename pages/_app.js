@@ -271,7 +271,7 @@ export default class ExpenseWebApp extends App {
     
     const requestPricing = await fetch(dev ? `http://localhost:7071${query}` : query);
     const responsePricing = await requestPricing.json();
-    const pricingService = _.keyBy(responsePricing.pricing, i => i.productId + '_' + i.skuName);
+    const pricingService = _.keyBy(responsePricing.pricing, i => i.productId + '_' + i.skuName + '_' + i.meterName);
 
     const pricing = Object.assign(
       services.pricing,

@@ -51,8 +51,8 @@ class IoTHub extends React.Component {
 
     const initState = hashState(armRegionName, questions, outputs, expenses);
 
-    // Select a productId_skuName that will verify pricing is loaded for the selected region
-    const testProduct = 'DZH318Z0BQG2_Free';
+    // Select a productId_skuName_meterName that will verify pricing is loaded for the selected region
+    const testProduct = 'DZH318Z0BQG2_Free_Free Unit';
 
     // Verify that this service is due for an update
     if (serviceRegistered && !_.isEqual(lastSynced, lastUpdated) && (testProduct in pricing)) {
@@ -63,13 +63,13 @@ class IoTHub extends React.Component {
 
       const hub = {
         price: {
-          free: pricing['DZH318Z0BQG2_Free'].unitPrice,
-          b1: pricing['DZH318Z0BQG2_B1'].unitPrice * (Math.floor(outputs.messages_day / 400000.0) + 1),
-          b2: pricing['DZH318Z0BQG2_B2'].unitPrice * (Math.floor(outputs.messages_day / 6000000.0) + 1),
-          b3: pricing['DZH318Z0BQG2_B3'].unitPrice * (Math.floor(outputs.messages_day / 300000000.0) + 1),
-          s1: pricing['DZH318Z0BQG2_S1'].unitPrice * (Math.floor(outputs.messages_day / 400000.0) + 1),
-          s2: pricing['DZH318Z0BQG2_S2'].unitPrice * (Math.floor(outputs.messages_day / 6000000.0) + 1),
-          s3: pricing['DZH318Z0BQG2_S3'].unitPrice * (Math.floor(outputs.messages_day / 300000000.0) + 1),
+          free: pricing['DZH318Z0BQG2_Free_Free Unit'].unitPrice,
+          b1: pricing['DZH318Z0BQG2_B1_Basic B1 Unit'].unitPrice * (Math.floor(outputs.messages_day / 400000.0) + 1),
+          b2: pricing['DZH318Z0BQG2_B2_Basic B2 Unit'].unitPrice * (Math.floor(outputs.messages_day / 6000000.0) + 1),
+          b3: pricing['DZH318Z0BQG2_B3_Basic B3 Unit'].unitPrice * (Math.floor(outputs.messages_day / 300000000.0) + 1),
+          s1: pricing['DZH318Z0BQG2_S1_Standard S1 Unit'].unitPrice * (Math.floor(outputs.messages_day / 400000.0) + 1),
+          s2: pricing['DZH318Z0BQG2_S2_Standard S2 Unit'].unitPrice * (Math.floor(outputs.messages_day / 6000000.0) + 1),
+          s3: pricing['DZH318Z0BQG2_S3_Standard S3 Unit'].unitPrice * (Math.floor(outputs.messages_day / 300000000.0) + 1),
         },
         viable: {
           free: messages_day_free_tier_eligible < 8000,
@@ -96,14 +96,14 @@ class IoTHub extends React.Component {
       }, async () => {
         // Verify that the inputs result in new outputs
         if (!_.isEqual(outputs.hub, hub) || !_.isEqual(armRegionName, currentPricingRegion) || !_.isEqual(lastSynced, lastUpdated)) {
-          updateOutputs(
+          await updateOutputs(
             initState,
             {
               hub,
               messages_day_free_tier_eligible,
             }
           );
-          updateExpense(
+          await updateExpense(
             initState,
             SERVICE_ID,
             expense
@@ -137,7 +137,7 @@ class IoTHub extends React.Component {
       SERVICE_ID,
       {
         order: 10,
-        name: "Azure IoT Hub",
+        name: "IoT Hub",
         serviceFamily: "Internet of Things",
         url_pricing: "https://azure.microsoft.com/en-us/pricing/details/iot-hub/",
       }
