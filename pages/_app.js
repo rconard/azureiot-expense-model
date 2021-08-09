@@ -9,7 +9,9 @@ import '../styles/main.css';
 export default class ExpenseWebApp extends App {
   constructor(props) {
     super(props);
+    this.hashState = this.hashState.bind(this);
     this.registerService = this.registerService.bind(this);
+    this.registerServiceAck = this.registerServiceAck.bind(this);
     this.registerQuestions = this.registerQuestions.bind(this);
     this.updateQuestion = this.updateQuestion.bind(this);
     this.registerOutputs = this.registerOutputs.bind(this);
@@ -21,7 +23,7 @@ export default class ExpenseWebApp extends App {
 
     this.state = {
       services: {
-        lastUpdated: 1,
+        lastUpdated: 'not_initialized',
         dev: false,
         armRegionName: 'westus',
         registry: {},
@@ -30,7 +32,9 @@ export default class ExpenseWebApp extends App {
         outputs: {},
         expenses: {},
         pricing: {},
+        hashState: this.hashState,
         registerService: this.registerService,
+        registerServiceAck: this.registerServiceAck,
         registerQuestions: this.registerQuestions,
         updateQuestion: this.updateQuestion,
         registerOutputs: this.registerOutputs,
@@ -41,6 +45,29 @@ export default class ExpenseWebApp extends App {
         updateRegion: this.updateRegion,
       }
     };
+  }
+
+  hashState(armRegionName, questions, outputs, expenses) {
+    // https://stackoverflow.com/a/8831937
+    const hashCode = function(stringifyState) {
+      var hash = 0;
+      if (stringifyState.length == 0) {
+        return hash;
+      }
+      for (var i = 0; i < stringifyState.length; i++) {
+        var char = stringifyState.charCodeAt(i);
+        hash = ((hash<<5)-hash)+char;
+        hash = hash & hash; // Convert to 32bit integer
+      }
+      return hash;
+    }
+
+    return hashCode(JSON.stringify({
+      armRegionName,
+      questions,
+      outputs,
+      expenses,
+    }));
   }
 
   async registerService(serviceId, service) {
@@ -59,6 +86,20 @@ export default class ExpenseWebApp extends App {
       services: update(services, {
         registry: {
           $set: registry,
+        },
+      }),
+    });
+  }
+
+  async registerServiceAck() {
+    const {
+      services,
+    } = this.state;
+
+    this.setState({
+      services: update(services, {
+        lastUpdated: {
+          $set: this.hashState(this.state.armRegionName, this.state.questions, this.state.outputs, this.state.expenses),
         },
       }),
     });
@@ -130,7 +171,7 @@ export default class ExpenseWebApp extends App {
           },
         },
         lastUpdated: {
-          $set: performance.now(),
+          $set: this.hashState(this.state.armRegionName, this.state.questions, this.state.outputs, this.state.expenses),
         },
       }),
     });
@@ -150,18 +191,28 @@ export default class ExpenseWebApp extends App {
     });
   }
 
-  async updateOutputs(updateTime, outputs) {
+  async updateOutputs(hashedState, updatedOutputs) {
     const {
       services,
     } = this.state;
 
+    // Merge existing questions with registered questions
+    const outputs = Object.assign(
+      services.outputs,
+      updatedOutputs
+    );
+
+    console.log([
+      hashedState,
+      services.lastUpdated
+    ]);
     this.setState({
       services: update(services, {
         outputs: {
-          $merge: outputs,
+          $set: outputs,
         },
         lastUpdated: {
-          $set: updateTime,
+          $set: hashedState,
         },
       }),
     });
@@ -183,7 +234,7 @@ export default class ExpenseWebApp extends App {
     });
   }
 
-  async updateExpense(updateTime, serviceId, expense) {
+  async updateExpense(hashedState, serviceId, expense) {
     const {
       services,
     } = this.state;
@@ -196,7 +247,7 @@ export default class ExpenseWebApp extends App {
           },
         },
         lastUpdated: {
-          $set: updateTime,
+          $set: hashedState,
         },
       }),
     });
@@ -228,7 +279,7 @@ export default class ExpenseWebApp extends App {
           $set: armRegionName,
         },
         lastUpdated: {
-          $set: performance.now(),
+          $set: this.hashState(this.state.armRegionName, this.state.questions, this.state.outputs, this.state.expenses),
         },
       }),
     });

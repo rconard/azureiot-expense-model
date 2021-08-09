@@ -14,7 +14,7 @@ class DeviceProvisioningService extends React.Component {
     super(props);
 
     this.state = {
-      lastSynced: 0,
+      lastSynced: undefined,
       serviceRegistered: false,
       currentPricingRegion: undefined,
     };
@@ -28,17 +28,20 @@ class DeviceProvisioningService extends React.Component {
       lastSynced,
     } = this.state;
 
-    return lastSynced < lastUpdated;
+    return !_.isEqual(lastSynced, lastUpdated);
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    const thisUpdateTime = performance.now();
     const {
       lastUpdated,
       armRegionName,
       questions,
       outputs,
       pricing,
+      expenses,
+      hashState,
+      updateOutputs,
+      updateExpense,
     } = this.context;
     const {
       serviceRegistered,
@@ -46,30 +49,32 @@ class DeviceProvisioningService extends React.Component {
       currentPricingRegion,
     } = this.state;
 
+    const initState = hashState(armRegionName, questions, outputs, expenses);
+
     // Select a productId_skuName that will verify pricing is loaded for the selected region
     const testProduct = 'DZH318Z0BQG1_S1';
 
     // Verify that this service is due for an update
-    if (serviceRegistered && (lastSynced < lastUpdated) && (testProduct in pricing)) {
+    if (serviceRegistered && !_.isEqual(lastSynced, lastUpdated) && (testProduct in pricing)) {
       // Update internal expense model here
       const dps_hits_month = questions.device_count.value * questions.device_restart_mo.value;
       const dps_expense = Math.ceil(dps_hits_month / 1000.0) * pricing['DZH318Z0BQG1_S1'].unitPrice;
 
       // To avoid an infinite update loop, use the same update time
       this.setState({
-        lastSynced: thisUpdateTime,
+        lastSynced: initState,
         currentPricingRegion: armRegionName,
       }, async () => {
         // Verify that the inputs result in new outputs
-        if (!_.isEqual(outputs.dps_hits_month, dps_hits_month) || !_.isEqual(armRegionName, currentPricingRegion)) {
-          await this.context.updateOutputs(
-            thisUpdateTime,
+        if (!_.isEqual(outputs.dps_hits_month, dps_hits_month) || !_.isEqual(armRegionName, currentPricingRegion) || !_.isEqual(lastSynced, lastUpdated)) {
+          updateOutputs(
+            initState,
             {
               dps_hits_month,
             }
           );
-          await this.context.updateExpense(
-            thisUpdateTime,
+          updateExpense(
+            initState,
             SERVICE_ID,
             dps_expense
           );
@@ -81,6 +86,7 @@ class DeviceProvisioningService extends React.Component {
   async componentDidMount() {
     const {
       registerService,
+      registerServiceAck,
       registerQuestions,
       registerOutputs,
       registerExpense,
@@ -142,6 +148,8 @@ class DeviceProvisioningService extends React.Component {
 
     this.setState({
       serviceRegistered: true,
+    }, () => {
+      registerServiceAck();
     });
   }
 

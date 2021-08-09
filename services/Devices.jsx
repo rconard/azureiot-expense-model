@@ -52,7 +52,7 @@ class Devices extends React.Component {
     super(props);
 
     this.state = {
-      lastSynced: 0,
+      lastSynced: undefined,
       serviceRegistered: false,
       currentPricingRegion: undefined,
     };
@@ -66,7 +66,7 @@ class Devices extends React.Component {
       lastSynced,
     } = this.state;
 
-    return lastSynced < lastUpdated;
+    return !_.isEqual(lastSynced, lastUpdated);
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -76,6 +76,9 @@ class Devices extends React.Component {
       armRegionName,
       questions,
       outputs,
+      expenses,
+      hashState,
+      updateOutputs,
     } = this.context;
     const {
       serviceRegistered,
@@ -83,20 +86,22 @@ class Devices extends React.Component {
       currentPricingRegion,
     } = this.state;
 
+    const initState = hashState(armRegionName, questions, outputs, expenses);
+
     // Verify that this service is due for an update
-    if (serviceRegistered && (lastSynced < lastUpdated)) {
+    if (serviceRegistered && !_.isEqual(lastSynced, lastUpdated)) {
       // Update internal expense model here
       const messages_day = (Math.ceil(questions.message_size_d2c_kb.value / 4) * questions.message_count_day_d2c.value + Math.ceil(questions.message_size_c2d_kb.value / 4) * questions.message_count_day_c2d.value) * questions.device_count.value;
 
       // To avoid an infinite update loop, use the same update time
       this.setState({
-        lastSynced: thisUpdateTime,
+        lastSynced: initState,
         currentPricingRegion: armRegionName,
-      }, () => {
+      }, async () => {
         // Verify that the inputs result in new outputs
-        if (!_.isEqual(outputs.messages_day, messages_day) || !_.isEqual(armRegionName, currentPricingRegion)) {
-          this.context.updateOutputs(
-            thisUpdateTime,
+        if (!_.isEqual(outputs.messages_day, messages_day) || !_.isEqual(armRegionName, currentPricingRegion) || !_.isEqual(lastSynced, lastUpdated)) {
+          updateOutputs(
+            initState,
             {
               messages_day,
               messages_month: messages_day * 30,
@@ -110,6 +115,7 @@ class Devices extends React.Component {
   async componentDidMount() {
     const {
       registerService,
+      registerServiceAck,
       registerQuestions,
       registerOutputs,
       registerExpense,
@@ -206,6 +212,8 @@ class Devices extends React.Component {
 
     this.setState({
       serviceRegistered: true,
+    }, () => {
+      registerServiceAck();
     });
   }
 
