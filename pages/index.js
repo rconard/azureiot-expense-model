@@ -102,8 +102,11 @@ class Home extends Component {
 
   render() {
     const {
+      registry,
+      orderedServices,
       pricing,
       questions,
+      expenses,
       orderedQuestions,
       updateQuestion,
     } = this.context;
@@ -222,6 +225,28 @@ class Home extends Component {
               <Devices />
               <IoTHub />
               <DeviceProvisioningService />
+            </div>
+            <div
+              className="expense-table" >
+              {orderedServices.map((service) => {
+                if (service in expenses) {
+                  return (
+                    <div
+                      className="expense-service-container" >
+                      <div
+                        className="expense-service-name" >
+                        {registry[service].name}
+                      </div>
+                      <div
+                        className="expense-service-expense" >
+                        {expenses[service].toLocaleString('en-US', {style: 'currency', currency: 'USD'})}
+                      </div>
+                    </div>
+                  );
+                } else {
+                  return false;
+                }
+              })}
             </div>
           </div>
           <hr />

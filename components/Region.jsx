@@ -70,6 +70,9 @@ class Region extends React.Component {
     return (
       <div
         className="question" >
+        <label>
+          Select Your Region
+        </label>
         <select
           id="armRegionName"
           name="armRegionName"

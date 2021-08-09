@@ -239,7 +239,7 @@ class IoTHub extends React.Component {
                   return (
                     <td
                       key={tier} >
-                      ${outputs.hub.price[tier]}
+                      {outputs.hub.price[tier].toLocaleString('en-US', {style: 'currency', currency: 'USD'})}
                     </td>
                   )
                 })}

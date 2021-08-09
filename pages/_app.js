@@ -27,6 +27,7 @@ export default class ExpenseWebApp extends App {
         dev: false,
         armRegionName: 'westus',
         registry: {},
+        orderedServices: [],
         questions: {},
         orderedQuestions: [],
         outputs: {},
@@ -82,10 +83,17 @@ export default class ExpenseWebApp extends App {
       }
     );
 
+    const orderedServices = _.sortBy(Object.keys(registry), (service) => {
+      return registry[service].order;
+    });
+
     this.setState({
       services: update(services, {
         registry: {
           $set: registry,
+        },
+        orderedServices: {
+          $set: orderedServices,
         },
       }),
     });
