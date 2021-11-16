@@ -12,4 +12,4 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > mic
 
 # Install Azure Functions Core Tools 3.x
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends azure-functions-core-tools-3
+    && apt-get -y install --no-install-recommends azure-functions-core-tools-4
