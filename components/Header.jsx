@@ -8,7 +8,7 @@ const Header = function () {
       <div
         className={styles["header-name"]} >
         <h1>
-          Azure IoT Expense Estimator
+          Azure IoT Expense Estimator and Architecture Builder
         </h1>
       </div>
     </header>
