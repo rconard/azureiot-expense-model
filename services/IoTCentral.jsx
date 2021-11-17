@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { ServiceContext } from '../contexts/ServiceContext.js';
 import sharedStyles from '../styles/services/shared.module.css';
 import serviceStyles from '../styles/services/iotcentral.module.css';
+import AzureIoTCentralLogo from '../public/logos/Azure_IoT_Central.png';
 
 // Create a String to Identify the Service
 const SERVICE_ID = 'IoTCentral';
@@ -122,6 +123,7 @@ class IoTCentral extends React.Component {
       serviceFamily: Provide the ARM serviceFamily used in the pricing API call
                      https://docs.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices
       url_pricing: Webpage where the user can find details on the service pricing
+      logos: Where in the architecture diagram should this service logo be added?
     }
     */
     await registerService(
@@ -131,6 +133,21 @@ class IoTCentral extends React.Component {
         name: "IoT Central",
         serviceFamily: "Internet of Things",
         url_pricing: "https://azure.microsoft.com/en-us/pricing/details/iot-central/",
+        logos: {
+          Devices: [],
+          Connectivity: [],
+          Messaging: [AzureIoTCentralLogo],
+          Provisioning: [AzureIoTCentralLogo],
+          RealTime: [AzureIoTCentralLogo],
+          Management: [AzureIoTCentralLogo],
+          Scaling: [AzureIoTCentralLogo],
+          CrossRegion: [AzureIoTCentralLogo],
+          Hot: [],
+          Warm: [],
+          Cold: [],
+          Connections: [],
+          Integrations: [],
+        },
       }
     );
 

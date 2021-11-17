@@ -4,6 +4,7 @@ import ToggleService from '../components/ToggleService.jsx';
 import { ServiceContext } from '../contexts/ServiceContext.js';
 import sharedStyles from '../styles/services/shared.module.css';
 import serviceStyles from '../styles/services/iothub.module.css';
+import AzureIoTHubLogo from '../public/logos/Azure_IoT_Hub.png';
 
 // Create a String to Identify the Service
 const SERVICE_ID = 'IoTHub';
@@ -132,6 +133,7 @@ class IoTHub extends React.Component {
       serviceFamily: Provide the ARM serviceFamily used in the pricing API call
                      https://docs.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices
       url_pricing: Webpage where the user can find details on the service pricing
+      logos: Where in the architecture diagram should this service logo be added?
     }
     */
     await registerService(
@@ -141,6 +143,21 @@ class IoTHub extends React.Component {
         name: "IoT Hub",
         serviceFamily: "Internet of Things",
         url_pricing: "https://azure.microsoft.com/en-us/pricing/details/iot-hub/",
+        logos: {
+          Devices: [],
+          Connectivity: [],
+          Messaging: [AzureIoTHubLogo],
+          Provisioning: [],
+          RealTime: [],
+          Management: [],
+          Scaling: [],
+          CrossRegion: [],
+          Hot: [],
+          Warm: [],
+          Cold: [],
+          Connections: [],
+          Integrations: [],
+        },
       }
     );
 

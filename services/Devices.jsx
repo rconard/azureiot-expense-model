@@ -8,6 +8,7 @@ import _ from 'lodash';
 import { ServiceContext } from '../contexts/ServiceContext.js';
 import sharedStyles from '../styles/services/shared.module.css';
 import serviceStyles from '../styles/services/devices.module.css';
+import DeviceLogo from '../public/logos/Device.png';
 
 // Create a String to Identify the Service
 const SERVICE_ID = 'Devices';
@@ -131,6 +132,7 @@ class Devices extends React.Component {
       serviceFamily: Provide the ARM serviceFamily used in the pricing API call
                      https://docs.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices
       url_pricing: Webpage where the user can find details on the service pricing
+      logos: Where in the architecture diagram should this service logo be added?
     }
     */
     await registerService(
@@ -140,6 +142,21 @@ class Devices extends React.Component {
         name: "Devices",
         serviceFamily: "Internet of Things",
         url_pricing: "https://azure.microsoft.com/en-us/pricing/details/iot-hub/",
+        logos: {
+          Devices: [DeviceLogo],
+          Connectivity: [],
+          Messaging: [],
+          Provisioning: [],
+          RealTime: [],
+          Management: [],
+          Scaling: [],
+          CrossRegion: [],
+          Hot: [],
+          Warm: [],
+          Cold: [],
+          Connections: [],
+          Integrations: [],
+        },
       }
     );
 
