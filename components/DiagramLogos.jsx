@@ -4,6 +4,10 @@ import _ from 'lodash';
 import { ServiceContext } from '../contexts/ServiceContext.js';
 import sharedStyles from '../styles/services/shared.module.css';
 
+const staticImageLoader = (imageFileName) => {
+  return `/logos/${imageFileName.src}`;
+}
+
 class DiagramLogos extends Component {
   constructor(props) {
     super(props);
@@ -25,7 +29,7 @@ class DiagramLogos extends Component {
         {logoArray.map((logo) => {
           return (
             <div
-              key={logo.src}
+              key={logo}
               style={{
                 margin: '0 auto 4px',
                 position: 'relative',
@@ -34,6 +38,7 @@ class DiagramLogos extends Component {
                 width: 110,
               }} >
               <Image
+                loader={staticImageLoader}
                 src={logo}
                 layout='fill'
                 objectFit='contain' />

@@ -4,7 +4,6 @@ import _ from 'lodash';
 import { ServiceContext } from '../contexts/ServiceContext.js';
 import sharedStyles from '../styles/services/shared.module.css';
 import serviceStyles from '../styles/services/iotcentral.module.css';
-import AzureIoTCentralLogo from '../public/logos/Azure_IoT_Central.png';
 
 // Create a String to Identify the Service
 const SERVICE_ID = 'IoTCentral';
@@ -136,12 +135,12 @@ class IoTCentral extends React.Component {
         logos: {
           Devices: [],
           Connectivity: [],
-          Messaging: [AzureIoTCentralLogo],
-          Provisioning: [AzureIoTCentralLogo],
-          RealTime: [AzureIoTCentralLogo],
-          Management: [AzureIoTCentralLogo],
-          Scaling: [AzureIoTCentralLogo],
-          CrossRegion: [AzureIoTCentralLogo],
+          Messaging: ['Azure_IoT_Central.png'],
+          Provisioning: ['Azure_IoT_Central.png'],
+          RealTime: ['Azure_IoT_Central.png'],
+          Management: ['Azure_IoT_Central.png'],
+          Scaling: ['Azure_IoT_Central.png'],
+          CrossRegion: ['Azure_IoT_Central.png'],
           Hot: [],
           Warm: [],
           Cold: [],

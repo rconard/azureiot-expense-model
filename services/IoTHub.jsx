@@ -4,7 +4,6 @@ import ToggleService from '../components/ToggleService.jsx';
 import { ServiceContext } from '../contexts/ServiceContext.js';
 import sharedStyles from '../styles/services/shared.module.css';
 import serviceStyles from '../styles/services/iothub.module.css';
-import AzureIoTHubLogo from '../public/logos/Azure_IoT_Hub.png';
 
 // Create a String to Identify the Service
 const SERVICE_ID = 'IoTHub';
@@ -146,7 +145,7 @@ class IoTHub extends React.Component {
         logos: {
           Devices: [],
           Connectivity: [],
-          Messaging: [AzureIoTHubLogo],
+          Messaging: ['Azure_IoT_Hub.png'],
           Provisioning: [],
           RealTime: [],
           Management: [],

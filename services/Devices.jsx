@@ -8,7 +8,6 @@ import _ from 'lodash';
 import { ServiceContext } from '../contexts/ServiceContext.js';
 import sharedStyles from '../styles/services/shared.module.css';
 import serviceStyles from '../styles/services/devices.module.css';
-import DeviceLogo from '../public/logos/Device.png';
 
 // Create a String to Identify the Service
 const SERVICE_ID = 'Devices';
@@ -143,7 +142,7 @@ class Devices extends React.Component {
         serviceFamily: "Internet of Things",
         url_pricing: "https://azure.microsoft.com/en-us/pricing/details/iot-hub/",
         logos: {
-          Devices: [DeviceLogo],
+          Devices: ['Device.png'],
           Connectivity: [],
           Messaging: [],
           Provisioning: [],

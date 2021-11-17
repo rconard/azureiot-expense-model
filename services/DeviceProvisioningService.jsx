@@ -4,7 +4,6 @@ import _ from 'lodash';
 import { ServiceContext } from '../contexts/ServiceContext.js';
 import sharedStyles from '../styles/services/shared.module.css';
 import serviceStyles from '../styles/services/deviceprovisioningservice.module.css';
-import DeviceProvisioningServiceLogo from '../public/logos/Azure_Iot_Hub_Device_Provisioning_Service.png';
 
 // Create a String to Identify the Service
 const SERVICE_ID = 'DeviceProvisioningService';
@@ -117,7 +116,7 @@ class DeviceProvisioningService extends React.Component {
           Devices: [],
           Connectivity: [],
           Messaging: [],
-          Provisioning: [DeviceProvisioningServiceLogo],
+          Provisioning: ['Azure_Iot_Hub_Device_Provisioning_Service.png'],
           RealTime: [],
           Management: [],
           Scaling: [],
