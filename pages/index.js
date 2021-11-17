@@ -80,7 +80,7 @@ class Home extends Component {
       <div
         className="iot-pricing-explorer" >
         <Head>
-          <title>Home | Azure IoT Price Explorer</title>
+          <title>Azure IoT Expense Estimator and Architecture Builder</title>
         </Head>
         <main>
           <div
