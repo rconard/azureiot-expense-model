@@ -1,4 +1,5 @@
 import App, { Container } from 'next/app'
+import ReactGA from 'react-ga4';
 import _ from 'lodash';
 import update from 'immutability-helper';
 import Header from '../components/Header';
@@ -49,6 +50,36 @@ export default class ExpenseWebApp extends App {
         updateRegion: this.updateRegion,
       }
     };
+  }
+
+  componentDidMount() {
+    // Hi, this is Russell, the project maintainer!
+    // I'm using tracking to keep track of adoption metrics to see
+    // if we should make more investments in building this tool.
+    let campaignName = 'unset';
+    switch (window.location.hostname) {
+      case '127.0.0.1':
+        campaignName = 'Development'
+        break;
+      case 'localhost':
+        campaignName = 'Development'
+        break;
+      case 'azureiotpricing.naturenumbers.com':
+        campaignName = 'ruconard Azure Static Web App'
+        break;
+      default:
+        campaignName = window.location.hostname;
+        break;
+    }
+    ReactGA.initialize(
+      'G-PBDPE10T55',
+      {
+        gaOptions: {
+          campaignName,
+        },
+      }
+    );
+    ReactGA.pageview(window.location.pathname + window.location.search);
   }
 
   hashState(armRegionName, questions, outputs, expenses) {
@@ -124,8 +155,20 @@ export default class ExpenseWebApp extends App {
     let enabledServices = [];
     if (services.enabledServices.indexOf(serviceId) > -1) {
       enabledServices = _.without(services.enabledServices, serviceId);
+
+      ReactGA.event({
+        category: "service",
+        action: "disable",
+        label: serviceId,
+      });
     } else {
       enabledServices = _.union(services.enabledServices, [serviceId]);
+
+      ReactGA.event({
+        category: "service",
+        action: "enable",
+        label: serviceId,
+      });
     }
 
     this.setState({
@@ -193,6 +236,19 @@ export default class ExpenseWebApp extends App {
       }
     }
 
+    const questionEvent = {
+      category: "question",
+      action: questionField,
+    };
+
+    if (['integer', 'float'].indexOf(outputType) > -1) {
+      questionEvent.value = value;
+    } else {
+      questionEvent.label = value;
+    }
+
+    ReactGA.event(questionEvent);
+
     this.setState({
       services: update(services, {
         questions: {
@@ -234,10 +290,6 @@ export default class ExpenseWebApp extends App {
       updatedOutputs
     );
 
-    console.log([
-      hashedState,
-      services.lastUpdated
-    ]);
     this.setState({
       services: update(services, {
         outputs: {
@@ -321,6 +373,12 @@ export default class ExpenseWebApp extends App {
     const {
       services,
     } = this.state;
+
+    ReactGA.event({
+      category: "region",
+      action: "change",
+      label: armRegionName,
+    });
 
     const serviceFamilies = _.uniq(Object.keys(services.registry).map((serviceId) => {
       return services.registry[serviceId].serviceFamily;
