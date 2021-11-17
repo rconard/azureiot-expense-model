@@ -27,7 +27,7 @@ class ToggleService extends React.Component {
         className={sharedStyles['service-toggler-container']} >
           <Toggle
             id={'service-selected-' + service}
-            defaultChecked={enabledServices.indexOf(service) > -1}
+            checked={enabledServices.indexOf(service) > -1}
             onChange={() => toggleServiceEnabled(service)} />
           <label htmlFor='service-selected'>Service Selected</label>
       </div>
