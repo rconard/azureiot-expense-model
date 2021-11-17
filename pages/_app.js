@@ -12,6 +12,7 @@ export default class ExpenseWebApp extends App {
     this.hashState = this.hashState.bind(this);
     this.registerService = this.registerService.bind(this);
     this.registerServiceAck = this.registerServiceAck.bind(this);
+    this.toggleServiceEnabled = this.toggleServiceEnabled.bind(this);
     this.registerQuestions = this.registerQuestions.bind(this);
     this.updateQuestion = this.updateQuestion.bind(this);
     this.registerOutputs = this.registerOutputs.bind(this);
@@ -28,6 +29,7 @@ export default class ExpenseWebApp extends App {
         armRegionName: 'westus',
         registry: {},
         orderedServices: [],
+        enabledServices: [],
         questions: {},
         orderedQuestions: [],
         outputs: {},
@@ -36,6 +38,7 @@ export default class ExpenseWebApp extends App {
         hashState: this.hashState,
         registerService: this.registerService,
         registerServiceAck: this.registerServiceAck,
+        toggleServiceEnabled: this.toggleServiceEnabled,
         registerQuestions: this.registerQuestions,
         updateQuestion: this.updateQuestion,
         registerOutputs: this.registerOutputs,
@@ -108,6 +111,27 @@ export default class ExpenseWebApp extends App {
       services: update(services, {
         lastUpdated: {
           $set: this.hashState(this.state.armRegionName, this.state.questions, this.state.outputs, this.state.expenses),
+        },
+      }),
+    });
+  }
+
+  async toggleServiceEnabled(serviceId) {
+    const {
+      services,
+    } = this.state;
+
+    let enabledServices = [];
+    if (services.enabledServices.indexOf(serviceId) > -1) {
+      enabledServices = _.without(services.enabledServices, serviceId);
+    } else {
+      enabledServices = _.union(services.enabledServices, [serviceId]);
+    }
+
+    this.setState({
+      services: update(services, {
+        enabledServices: {
+          $set: enabledServices,
         },
       }),
     });

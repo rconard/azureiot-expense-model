@@ -1,0 +1,309 @@
+/* https://grid.layoutit.com/?id=E240lWL */
+.architecture-diagram-container {
+  display: grid;
+  grid-template-columns: 240px 480px 240px;
+  grid-template-rows: 610px;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  align-items: center;
+  grid-template-areas:
+    "Things Solution Actions";
+}
+
+.Things {
+  display: grid;
+  grid-template-columns: 120px 120px;
+  grid-template-rows: 610px;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "Devices Connectivity";
+  grid-area: Things;
+}
+
+.Devices {
+  display: grid;
+  grid-template-columns: 120px;
+  grid-template-rows: 40px 30px 540px;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "ThingsHeadLeft"
+    "DevicesHead"
+    "DevicesLogos";
+  grid-area: Devices;
+}
+
+.ThingsHeadLeft { grid-area: ThingsHeadLeft; }
+
+.DevicesHead { grid-area: DevicesHead; }
+
+.DevicesLogos { grid-area: DevicesLogos; }
+
+.Connectivity {
+  display: grid;
+  grid-template-columns: 120px;
+  grid-template-rows: 40px 30px 540px;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "ThingsHeadRight"
+    "ConnectivityHead"
+    "ConnectivityLogos";
+  grid-area: Connectivity;
+}
+
+.ThingsHeadRight { grid-area: ThingsHeadRight; }
+
+.ConnectivityHead { grid-area: ConnectivityHead; }
+
+.ConnectivityLogos { grid-area: ConnectivityLogos; }
+
+.Solution {
+  display: grid;
+  grid-template-columns: 120px 120px 120px 120px;
+  grid-template-rows: 610px;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "Ingestion UI HADR Data";
+  grid-area: Solution;
+}
+
+.Ingestion {
+  display: grid;
+  grid-template-columns: 120px;
+  grid-template-rows: 40px 30px 30px 330px 30px 150px;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "SolutionHeadA"
+    "IngestionHead"
+    "MessagingHead"
+    "MessagingLogos"
+    "ProvisioningHead"
+    "ProvisioningLogos";
+  grid-area: Ingestion;
+}
+
+.MessagingHead { grid-area: MessagingHead; }
+
+.MessagingLogos { grid-area: MessagingLogos; }
+
+.ProvisioningHead { grid-area: ProvisioningHead; }
+
+.ProvisioningLogos { grid-area: ProvisioningLogos; }
+
+.SolutionHeadA { grid-area: SolutionHeadA; }
+
+.IngestionHead { grid-area: IngestionHead; }
+
+.UI {
+  display: grid;
+  grid-template-columns: 120px;
+  grid-template-rows: 40px 30px 30px 330px 30px 150px;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "SolutionHeadB"
+    "UIHead"
+    "RealTimeHead"
+    "RealTimeLogos"
+    "ManagementHead"
+    "ManagementLogos";
+  grid-area: UI;
+}
+
+.ManagementLogos { grid-area: ManagementLogos; }
+
+.ManagementHead { grid-area: ManagementHead; }
+
+.RealTimeLogos { grid-area: RealTimeLogos; }
+
+.RealTimeHead { grid-area: RealTimeHead; }
+
+.UIHead { grid-area: UIHead; }
+
+.SolutionHeadB { grid-area: SolutionHeadB; }
+
+.HADR {
+  display: grid;
+  grid-template-columns: 120px;
+  grid-template-rows: 40px 30px 30px 330px 30px 150px;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "SolutionHeadC"
+    "HADRHead"
+    "ScalingHead"
+    "ScalingLogos"
+    "CrossRegionHead"
+    "CrossRegionLogos";
+  grid-area: HADR;
+}
+
+.CrossRegionLogos { grid-area: CrossRegionLogos; }
+
+.CrossRegionHead { grid-area: CrossRegionHead; }
+
+.ScalingLogos { grid-area: ScalingLogos; }
+
+.ScalingHead { grid-area: ScalingHead; }
+
+.HADRHead { grid-area: HADRHead; }
+
+.SolutionHeadC { grid-area: SolutionHeadC; }
+
+.Data {
+  display: grid;
+  grid-template-columns: 120px;
+  grid-template-rows: 40px 30px 30px 150px 30px 150px 30px 150px;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "SolutionHeadD"
+    "DataHead"
+    "HotHead"
+    "HotLogos"
+    "WarmHead"
+    "WarmLogos"
+    "ColdHead"
+    "ColdLogos";
+  grid-area: Data;
+}
+
+.ColdLogos { grid-area: ColdLogos; }
+
+.ColdHead { grid-area: ColdHead; }
+
+.WarmLogos { grid-area: WarmLogos; }
+
+.WarmHead { grid-area: WarmHead; }
+
+.HotLogos { grid-area: HotLogos; }
+
+.HotHead { grid-area: HotHead; }
+
+.DataHead { grid-area: DataHead; }
+
+.SolutionHeadD { grid-area: SolutionHeadD; }
+
+.Actions {
+  display: grid;
+  grid-template-columns: 120px 120px;
+  grid-template-rows: 610px;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "Connections Integrations";
+  grid-area: Actions;
+}
+
+.Connections {
+  display: grid;
+  grid-template-columns: 120px;
+  grid-template-rows: 40px 30px 540px;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "ActionsHeadLeft"
+    "ConnectionsHead"
+    "ConnectionsLogos";
+  grid-area: Connections;
+}
+
+.ConnectionsLogos { grid-area: ConnectionsLogos; }
+
+.ConnectionsHead { grid-area: ConnectionsHead; }
+
+.ActionsHeadLeft { grid-area: ActionsHeadLeft; }
+
+.Integrations {
+  display: grid;
+  grid-template-columns: 120px;
+  grid-template-rows: 40px 30px 540px;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "ActionsHeadRight"
+    "IntegrationsHead"
+    "IntegrationsLogos";
+  grid-area: Integrations;
+}
+
+.IntegrationsLogos { grid-area: IntegrationsLogos; }
+
+.IntegrationsHead { grid-area: IntegrationsHead; }
+
+.ActionsHeadRight { grid-area: ActionsHeadRight; }
+/* End Auto Generated */
+
+.architecture-diagram-container {
+  margin: 24px auto 36px;
+  width: 965px;
+  border: 2px solid #aaaaaa;
+  text-align: center;
+}
+
+.diagram-top-level-heading {
+  padding: 8px 0 4px;
+  font-weight: 700;
+  font-size: 24px;
+  color: white;
+  background-color: #008ad7;
+}
+
+.diagram-top-level-heading-2wide {
+  transform: translateX(-50%) translateX(120px);
+}
+
+.diagram-top-level-heading-4wide {
+  transform: translateX(-50%) translateX(240px);
+}
+
+.diagram-column-heading {
+  padding: 8px 0 4px;
+  font-weight: 700;
+  font-size: 18px;
+  color: white;
+  background-color: #008ad7;
+}
+
+.subtype-heading {
+  font-weight: 700;
+  color: #777777;
+}
+
+.Solution,
+.Actions {
+  border-left: 2px solid #aaaaaa;
+}
+
+.Devices,
+.Connectivity,
+.Ingestion,
+.UI,
+.HADR,
+.Data,
+.Connections,
+.Integrations {
+  font-size: 16px;
+}
+
+.Devices div,
+.Connectivity div,
+.Ingestion div,
+.UI div,
+.HADR div,
+.Data div,
+.Connections div,
+.Integrations div {
+  padding: 4px;
+}
+
+.Devices,
+.Ingestion,
+.HADR,
+.Connections {
+  background-color: #f0f0f0;
+}

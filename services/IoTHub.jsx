@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import _ from 'lodash';
+import ToggleService from '../components/ToggleService.jsx';
 import { ServiceContext } from '../contexts/ServiceContext.js';
 import sharedStyles from '../styles/services/shared.module.css';
 import serviceStyles from '../styles/services/iothub.module.css';
@@ -246,6 +247,8 @@ class IoTHub extends React.Component {
               </tr>
             </tbody>
           </table>
+          <ToggleService
+            service={SERVICE_ID} />
         </div>
     );
   }

@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import ToggleService from '../components/ToggleService.jsx';
 import _ from 'lodash';
 import { ServiceContext } from '../contexts/ServiceContext.js';
 import sharedStyles from '../styles/services/shared.module.css';
@@ -216,6 +217,8 @@ class IoTCentral extends React.Component {
               </tr>
             </tbody>
           </table>
+          <ToggleService
+            service={SERVICE_ID} />
         </div>
     );
   }
