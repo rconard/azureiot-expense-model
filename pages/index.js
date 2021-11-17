@@ -5,6 +5,7 @@ import fetch from 'isomorphic-unfetch';
 import _ from 'lodash';
 import { ServiceContext } from '../contexts/ServiceContext.js';
 
+import ArchitectureDiagram from '../components/ArchitectureDiagram.jsx';
 import Devices from '../services/Devices';
 import IoTHub from '../services/IoTHub.jsx';
 import DeviceProvisioningService from '../services/DeviceProvisioningService.jsx';
@@ -50,6 +51,7 @@ class Home extends Component {
   render() {
     const {
       registry,
+      enabledServices,
       orderedServices,
       pricing,
       questions,
@@ -62,6 +64,18 @@ class Home extends Component {
 
     console.log(this.context);
 
+    const tallyPriceService = [];
+    let priceSum = 0.0;
+    orderedServices.forEach((service) => {
+      const isThereExpense = service in expenses;
+      const isServiceSelected = enabledServices.indexOf(service) > -1;
+
+      if (isThereExpense && isServiceSelected) {
+        tallyPriceService.push(service);
+        priceSum += expenses[service];
+      }
+    });
+
     return (
       <div
         className="iot-pricing-explorer" >
@@ -70,9 +84,22 @@ class Home extends Component {
         </Head>
         <main>
           <div
-            className="arch-diagram-container" >
+            className='section-head' >
+            Architecture
+          </div>
+          <ArchitectureDiagram />
+          <div
+            className='section-head' >
+            Configuration
+          </div>
+          <div
+            className="configuration-column-container" >
             <div
               className="question-container" >
+              <div
+                className='configuration-column-head' >
+                Questions
+              </div>
               <Region />
               {orderedQuestions.map((questionField) => {
                 const question = questions[questionField];
@@ -119,7 +146,11 @@ class Home extends Component {
               })}
             </div>
             <div
-              className="arch-diagram" >
+              className="service-loader-component" >
+              <div
+                className='configuration-column-head' >
+                Services
+              </div>
               <Devices />
               <IoTHub />
               <DeviceProvisioningService />
@@ -127,25 +158,47 @@ class Home extends Component {
             </div>
             <div
               className="expense-table" >
-              {orderedServices.map((service) => {
-                if (service in expenses) {
-                  return (
+              <div
+                className='configuration-column-head' >
+                Expenses
+              </div>
+              {tallyPriceService.map((service) => {
+                return (
+                  <div
+                    key={service}
+                    className="expense-service-container" >
                     <div
-                      className="expense-service-container" >
-                      <div
-                        className="expense-service-name" >
-                        {registry[service].name}
-                      </div>
-                      <div
-                        className="expense-service-expense" >
-                        {expenses[service].toLocaleString('en-US', {style: 'currency', currency: 'USD'})}
-                      </div>
+                      className="expense-service-name" >
+                      {registry[service].name}
                     </div>
-                  );
-                } else {
-                  return false;
-                }
+                    <div
+                      className="expense-service-expense" >
+                      {expenses[service].toLocaleString('en-US', {style: 'currency', currency: 'USD'})}
+                    </div>
+                  </div>
+                );
               })}
+              {tallyPriceService.length > 0 ? (
+                <div
+                  className="expense-service-container expense-service-total" >
+                  <div
+                    className="expense-service-name" >
+                    Total
+                  </div>
+                  <div
+                    className="expense-service-expense" >
+                    {priceSum.toLocaleString('en-US', {style: 'currency', currency: 'USD'})}
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className="expense-service-container" >
+                  <div
+                    className="expense-service-name" >
+                    Please Enable Services
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           <hr />
