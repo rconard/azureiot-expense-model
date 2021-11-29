@@ -11,6 +11,7 @@ import IoTHub from '../services/IoTHub.jsx';
 import DeviceProvisioningService from '../services/DeviceProvisioningService.jsx';
 import Region from '../components/Region.jsx';
 import IoTCentral from '../services/IoTCentral.jsx';
+import Expense from '../services/EventHub.jsx';
 
 class Home extends Component {
   constructor(props) {
@@ -155,6 +156,7 @@ class Home extends Component {
               <IoTHub />
               <DeviceProvisioningService />
               <IoTCentral />
+              <Expense />
             </div>
             <div
               className="expense-table" >
