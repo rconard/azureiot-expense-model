@@ -81,7 +81,7 @@ class Home extends Component {
       <div
         className="iot-pricing-explorer" >
         <Head>
-          <title>Azure IoT Expense Estimator and Architecture Builder</title>
+          <title>ICED T | IoT Cost Estimator and Diagram Tool</title>
         </Head>
         <main>
           <div
